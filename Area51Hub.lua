@@ -1,113 +1,82 @@
-print("🔥 Area 51 Alpha Hub loading...")
+print("🔥 Area 51 Alpha ELITE Hub loading...")
 
--- Load Rayfield UI Library
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
-print("✅ Rayfield loaded!")
 
 local Window = Rayfield:CreateWindow({
-   Name = "Area 51 Alpha | hifsdfsddf Hub",
-   LoadingTitle = "Custom Hub v1.0",
-   LoadingSubtitle = "by hifsdfsddf",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "Area51Hub",
-   },
-   Discord = {
-      Enabled = false,
-   },
-   KeySystem = false
+   Name = "🚀 Area 51 Alpha | ELITE Hub",
+   LoadingTitle = "hifsdfsddf Elite",
+   ConfigurationSaving = { Enabled = true, FolderName = "Area51Elite" }
 })
 
--- Main Tab
-local MainTab = Window:CreateTab("🎮 Main", 4483362458)
+local MainTab = Window:CreateTab("🎮 Main")
+local CombatTab = Window:CreateTab("⚔️ Combat") 
+local PlayerTab = Window:CreateTab("👤 Player")
 
--- Speed Hack
+-- MAIN FEATURES (your working ones + improvements)
 MainTab:CreateToggle({
-   Name = "🚀 Speed Hack (50)",
+   Name = "🚀 Super Speed (100)",
    CurrentValue = false,
-   Flag = "SpeedHack",
    Callback = function(Value)
       spawn(function()
-         while MainTab.Flags.SpeedHack do
-            wait(0.1)
-            local player = game.Players.LocalPlayer
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-               player.Character.Humanoid.WalkSpeed = 50
-            end
-         end
-         -- Reset speed when disabled
-         local player = game.Players.LocalPlayer
-         if player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = 16
+         while Value do
+            wait()
+            local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+            if hum then hum.WalkSpeed = Value and 100 or 16 end
          end
       end)
-   end,
+   end
 })
 
--- Infinite Jump
 MainTab:CreateToggle({
-   Name = "🦘 Infinite Jump",
+   Name = "🦘 Infinite Jump", 
    CurrentValue = false,
-   Flag = "InfJump",
    Callback = function(Value)
       if Value then
-         local UserInputService = game:GetService("UserInputService")
-         UserInputService.JumpRequest:Connect(function()
-            local player = game.Players.LocalPlayer
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-               player.Character.Humanoid:ChangeState("Jumping")
-            end
+         game:GetService("UserInputService").JumpRequest:Connect(function()
+            game.Players.LocalPlayer.Character.Humanoid:ChangeState("Jumping")
          end)
       end
-   end,
+   end
 })
 
--- Fly (Bonus feature!)
-MainTab:CreateToggle({
-   Name = "✈️ Fly Hack",
-   CurrentValue = false,
-   Flag = "FlyHack",
-   Callback = function(Value)
-      local player = game.Players.LocalPlayer
-      if Value and player.Character then
-         local bodyVelocity = Instance.new("BodyVelocity")
-         bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
-         bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-         bodyVelocity.Parent = player.Character.HumanoidRootPart
-         
-         spawn(function()
-            while MainTab.Flags.FlyHack do
-               wait()
-               if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                  local camera = workspace.CurrentCamera
-                  local moveVector = Vector3.new(0, 0, 0)
-                  
-                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then
-                     moveVector = moveVector + camera.CFrame.LookVector
-                  end
-                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then
-                     moveVector = moveVector - camera.CFrame.LookVector
-                  end
-                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then
-                     moveVector = moveVector - camera.CFrame.RightVector
-                  end
-                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then
-                     moveVector = moveVector + camera.CFrame.RightVector
-                  end
-                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.Space) then
-                     moveVector = moveVector + Vector3.new(0, 1, 0)
-                  end
-                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftShift) then
-                     moveVector = moveVector - Vector3.new(0, 1, 0)
-                  end
-                  
-                  bodyVelocity.Velocity = moveVector * 50
+-- AREA 51 SPECIFIC FEATURES
+CombatTab:CreateButton({
+   Name = "🔫 Auto Get Gun (F1)",
+   Callback = function()
+      spawn(function()
+         while wait(1) do
+            -- Scans workspace for guns and teleports to them
+            for _, obj in pairs(workspace:GetChildren()) do
+               if obj.Name:lower():find("gun") or obj.Name:lower():find("weapon") then
+                  game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = obj.CFrame
+                  break
                end
             end
-            if bodyVelocity then bodyVelocity:Destroy() end
-         end)
-      end
-   end,
+         end
+      end)
+   end
 })
 
-print("🎉 Hub fully loaded! GUI should appear now.")
+PlayerTab:CreateButton({
+   Name = "📍 Teleport to Spawn",
+   Callback = function()
+      -- Common Area 51 spawn locations
+      local spawns = {"SpawnLocation", "Spawn", "Lobby"}
+      for _, spawnName in pairs(spawns) do
+         local spawn = workspace:FindFirstChild(spawnName)
+         if spawn then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = spawn.CFrame
+            break
+         end
+      end
+   end
+})
+
+PlayerTab:CreateToggle({
+   Name = "👻 Noclip",
+   CurrentValue = false,
+   Callback = function(Value)
+      spawn(function()
+         while Value do
+            wait()
+            if game.Players.LocalPlayer.Character 
