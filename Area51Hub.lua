@@ -1,160 +1,113 @@
---[[
-    In Area 51 (Alpha) - Custom Script Hub (v0.1)
-    Upload this file to your GitHub repo, then use:
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/YOURNAME/in-area-51-alpha-hub/main/Area51Hub.lua"))()
---]]
+print("🔥 Area 51 Alpha Hub loading...")
 
--- Check game (optional warning)
-if game.PlaceId ~= XXXXXXXX then -- <-- REPLACE with Actual PlaceId of "In Area 51 (Alpha)"
-    warn("This script is meant for 'In Area 51 (Alpha)' only.")
-    return
-end
-
--- // Load Rayfield
-local Rayfield
-pcall(function()
-    Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
-end)
-
-if not Rayfield then
-    warn("Failed to load Rayfield UI, terminating.")
-    return
-end
+-- Load Rayfield UI Library
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+print("✅ Rayfield loaded!")
 
 local Window = Rayfield:CreateWindow({
-    Name = "In Area 51 (Alpha) | Perplexity Hub",
-    LoadingTitle = "Custom Script Hub",
-    LoadingSubtitle = "by Perplexity",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "InArea51Hub"
-    }
+   Name = "Area 51 Alpha | hifsdfsddf Hub",
+   LoadingTitle = "Custom Hub v1.0",
+   LoadingSubtitle = "by hifsdfsddf",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "Area51Hub",
+   },
+   Discord = {
+      Enabled = false,
+   },
+   KeySystem = false
 })
 
--- Tabs
-local MainTab      = Window:CreateTab("Main")
-local MovementTab  = Window:CreateTab("Movement")
-local MiscTab      = Window:CreateTab("Misc")
+-- Main Tab
+local MainTab = Window:CreateTab("🎮 Main", 4483362458)
 
--- ===== MAIN FEATURES ===== --
-
--- Auto‑Jump Proxy (Infinite Jump)
-do
-    local InfJumpToggle = MainTab:CreateToggle({
-        Name = "Infinite Jump",
-        CurrentValue = false
-    })
-
-    InfJumpToggle:SetCallback(function(State)
-        if State then
-            game:GetService("UserInputService").JumpRequest:Connect(function()
-                local char = game.Players.LocalPlayer.Character
-                if char then
-                    local hum = char:FindFirstChildOfClass("Humanoid")
-                    if hum then
-                        hum:ChangeState("Jumping")
-                    end
-                end
-            end)
-        end
-    end)
-end
-
--- High Walkspeed
-do
-    local WalkSpeedToggle = MovementTab:CreateToggle({
-        Name = "High Walkspeed",
-        CurrentValue = false
-    })
-
-    local WalkSpeedSlider = MovementTab:CreateSlider({
-        Name = "Walkspeed Value",
-        Min = 16,
-        Max = 250,
-        CurrentValue = 50,
-        Prefix = "studs/sec",
-        Callback = function(Value)
-            if WalkSpeedToggle.Value then
-                local char = game.Players.LocalPlayer.Character
-                if char then
-                    local hum = char:FindFirstChildOfClass("Humanoid")
-                    if hum then
-                        hum.WalkSpeed = Value
-                    end
-                end
+-- Speed Hack
+MainTab:CreateToggle({
+   Name = "🚀 Speed Hack (50)",
+   CurrentValue = false,
+   Flag = "SpeedHack",
+   Callback = function(Value)
+      spawn(function()
+         while MainTab.Flags.SpeedHack do
+            wait(0.1)
+            local player = game.Players.LocalPlayer
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+               player.Character.Humanoid.WalkSpeed = 50
             end
-        end
-    })
+         end
+         -- Reset speed when disabled
+         local player = game.Players.LocalPlayer
+         if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = 16
+         end
+      end)
+   end,
+})
 
-    WalkSpeedToggle:SetCallback(function(State)
-        if State then
-            repeat
-                task.wait()
-                local char = game.Players.LocalPlayer.Character
-                if char then
-                    local hum = char:FindFirstChildOfClass("Humanoid")
-                    if hum and hum.WalkSpeed ~= WalkSpeedSlider.Value then
-                        hum.WalkSpeed = WalkSpeedSlider.Value
-                    end
-                end
-            until not State
-        end
-    end)
-end
-
--- Simple Teleport Button
-do
-    local player = game.Players.LocalPlayer
-
-    local TPToSpawnButton = MiscTab:CreateButton({
-        Name = "Teleport to Spawn",
-        Callback = function()
-            local char = player.Character or player.CharacterAdded:Wait()
-            local root = char:WaitForChild("HumanoidRootPart")
-
-            local spawnFolder = workspace:FindFirstChild("Spawn") -- adjust name for Area 51
-            if not spawnFolder then return end
-
-            local spawnCFrame = workspace.Spawn.CFrame -- find correct spawn in game via Explorer
-            if spawnCFrame then
-                root.CFrame = spawnCFrame
+-- Infinite Jump
+MainTab:CreateToggle({
+   Name = "🦘 Infinite Jump",
+   CurrentValue = false,
+   Flag = "InfJump",
+   Callback = function(Value)
+      if Value then
+         local UserInputService = game:GetService("UserInputService")
+         UserInputService.JumpRequest:Connect(function()
+            local player = game.Players.LocalPlayer
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+               player.Character.Humanoid:ChangeState("Jumping")
             end
-        end
-    })
-end
+         end)
+      end
+   end,
+})
 
--- Example: Toggle Noclip (you will have to tweak depending on Area 51’s movement logic)
-do
-    local NoclipToggle = MiscTab:CreateToggle({
-        Name = "Noclip (Toggle)",
-        CurrentValue = false,
-    })
-
-    NoclipToggle:SetCallback(function(State)
-        local char = game.Players.LocalPlayer.Character
-        if not char then return end
-
-        local root = char:FindFirstChild("HumanoidRootPart")
-        if not root then return end
-
-        local connection
-        if State then
-            root.Anchored = true
-            connection = game:GetService("RunService").RenderStepped:Connect(function()
-                local ignoreList = { root, workspace.Terrain }
-                local cam = workspace.CurrentCamera
-                if not cam then return end
-
-                local mouseHit = cam.ViewportMouse:MouseToWorldRay(root.Position, cam.CFrame.LookVector * 500)
-                repeat task.wait() until mouseHit
-                root.CFrame = mouseHit
-            end)
-        else
-            root.Anchored = false
-            if connection then
-                connection:Disconnect()
-                connection = nil
+-- Fly (Bonus feature!)
+MainTab:CreateToggle({
+   Name = "✈️ Fly Hack",
+   CurrentValue = false,
+   Flag = "FlyHack",
+   Callback = function(Value)
+      local player = game.Players.LocalPlayer
+      if Value and player.Character then
+         local bodyVelocity = Instance.new("BodyVelocity")
+         bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+         bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+         bodyVelocity.Parent = player.Character.HumanoidRootPart
+         
+         spawn(function()
+            while MainTab.Flags.FlyHack do
+               wait()
+               if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                  local camera = workspace.CurrentCamera
+                  local moveVector = Vector3.new(0, 0, 0)
+                  
+                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then
+                     moveVector = moveVector + camera.CFrame.LookVector
+                  end
+                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then
+                     moveVector = moveVector - camera.CFrame.LookVector
+                  end
+                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then
+                     moveVector = moveVector - camera.CFrame.RightVector
+                  end
+                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then
+                     moveVector = moveVector + camera.CFrame.RightVector
+                  end
+                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.Space) then
+                     moveVector = moveVector + Vector3.new(0, 1, 0)
+                  end
+                  if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftShift) then
+                     moveVector = moveVector - Vector3.new(0, 1, 0)
+                  end
+                  
+                  bodyVelocity.Velocity = moveVector * 50
+               end
             end
-        end
-    end)
-end
+            if bodyVelocity then bodyVelocity:Destroy() end
+         end)
+      end
+   end,
+})
+
+print("🎉 Hub fully loaded! GUI should appear now.")
