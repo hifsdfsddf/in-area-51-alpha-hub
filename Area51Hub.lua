@@ -1,15 +1,3 @@
-# 🚀 AREA 51 ALPHA - ULTIMATE HUB v7.0 🚀
-*Enhanced, Polished, and Fortified with Advanced Anti-Kick Protection*
-
-```lua
--- 🔥 AREA 51 ALPHA - ULTIMATE HUB v7.0 🔥
--- Advanced GUI + Enhanced Features + Anti-Kick Protection + 40+ Features
-print("🚀 ULTIMATE HUB v7.0 INITIALIZING... MAXIMUM SECURITY PROTOCOLS ACTIVE!")
-
--- ═══════════════════════════════════════════════════════════════
--- 🛡️ ADVANCED ANTI-KICK SYSTEM - MAXIMUM PROTECTION
--- ═══════════════════════════════════════════════════════════════
-
 local function initializeAntiKick()
     -- Hook all major detection vectors
     local mt = getrawmetatable(game)
